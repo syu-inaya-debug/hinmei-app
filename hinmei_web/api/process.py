@@ -29,10 +29,9 @@ def process_pdf(pdf_bytes: bytes) -> bytes:
     MAX_TEXT_WIDTH_PX = int(158.0 * SCALE)
 
     # Vercel環境のフォントパス（NotoSansCJK）
+       CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
     FONT_PATHS = [
-        "/var/task/fonts/NotoSansCJKjp-Bold.otf",
-        "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
-        "/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc",
+        os.path.join(CURRENT_DIR, "NotoSansJP-Bold.ttf"),
     ]
     font_path = next((f for f in FONT_PATHS if os.path.exists(f)), None)
 
