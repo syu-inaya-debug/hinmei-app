@@ -2,22 +2,22 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/process.py",
+      "src": "hinmei_web/api/process.py",
       "use": "@vercel/python"
     },
     {
-      "src": "public/**",
+      "src": "hinmei_web/public/**",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/process",
-      "dest": "/api/process.py"
+      "dest": "/hinmei_web/api/process.py"
     },
     {
       "src": "/(.*)",
-      "dest": "/public/$1"
+      "dest": "/hinmei_web/public/$1"
     }
   ]
 }
