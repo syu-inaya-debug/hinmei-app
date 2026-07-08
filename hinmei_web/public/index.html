@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hinmei.app - 送り状 品名拡大サービス</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', 'Meiryo', sans-serif;
+  background: #f7f8fa;
+  min-height: 100vh;
+  color: #1a1a2e;
+}
+header {
+  background: #1a1a2e;
+  color: white;
+  padding: 0 2rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo { font-size: 18px; font-weight: 700; }
+.logo span { color: #4fc3f7; }
+.badge {
+  background: rgba(79,195,247,0.15);
+  color: #4fc3f7;
+  border: 1px solid rgba(79,195,247,0.3);
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: white;
+  padding: 4rem 2rem 3rem;
+  text-align: center;
+}
+.hero h1 { font-size: 32px; font-weight: 800; line-height: 1.3; margin-bottom: 1rem; }
+.hero h1 span { color: #4fc3f7; }
+.hero p { font-size: 15px; color: rgba(255,255,255,0.7); max-width: 460px; margin: 0 auto 2rem; line-height: 1.7; }
+.pill-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.pill {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: white;
+  padding: 7px 16px;
+  border-radius: 100px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dot { width: 7px; height: 7px; border-radius: 50%; }
+.dot-green { background: #a5d6a7; }
+.dot-blue { background: #4fc3f7; }
+
+main { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+.counter-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid #e8eaf6;
+}
+.counter-left { flex: 1; }
+.counter-label { font-size: 13px; color: #666; margin-bottom: 6px; }
+.counter-bar { height: 6px; background: #e8eaf6; border-radius: 3px; overflow: hidden; }
+.counter-fill { height: 100%; background: #3f51b5; border-radius: 3px; transition: width 0.4s; }
+.counter-num { font-size: 28px; font-weight: 800; color: #3f51b5; white-space: nowrap; }
+.counter-sub { font-size: 12px; color: #999; font-weight: 400; }
+
+.upload-zone {
+  background: white;
+  border: 2.5px dashed #c5cae9;
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  margin-bottom: 1.2rem;
+}
+.upload-zone:hover, .upload-zone.drag { border-color: #3f51b5; background: #f8f9ff; }
+.upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-icon {
+  width: 56px; height: 56px;
+  background: #e8eaf6;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 28px;
+}
+.upload-zone h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.upload-zone p { color: #777; font-size: 14px; line-height: 1.6; }
+
+.file-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e8eaf6;
+  padding: 1.2rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 1rem;
+}
+.file-info { flex: 1; }
+.file-name { font-weight: 600; font-size: 15px; }
+.file-meta { font-size: 13px; color: #888; margin-top: 2px; }
+.btn-x { background: #f5f5f5; border: none; color: #666; border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer; }
+
+.btn-main {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-process { background: #3f51b5; color: white; }
+.btn-process:hover { background: #303f9f; }
+.btn-process:disabled { background: #c5cae9; cursor: not-allowed; }
+.btn-download { background: #2e7d32; color: white; margin-bottom: 10px; }
+.btn-download:hover { background: #1b5e20; }
+.btn-reset { background: white; color: #3f51b5; border: 2px solid #3f51b5; }
+.btn-reset:hover { background: #f0f2ff; }
+
+.processing-box {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e8eaf6;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.spinner {
+  width: 48px; height: 48px;
+  border: 4px solid #e8eaf6;
+  border-top-color: #3f51b5;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 1rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.processing-box h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.processing-box p { color: #777; font-size: 14px; }
+.proc-bar { height: 5px; background: #e8eaf6; border-radius: 3px; margin-top: 1.5rem; overflow: hidden; }
+.proc-fill { height: 100%; background: #3f51b5; border-radius: 3px; transition: width 0.6s ease; }
+
+.success-box {
+  background: white;
+  border-radius: 12px;
+  border: 2px solid #a5d6a7;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.success-icon { font-size: 48px; margin-bottom: 0.8rem; }
+.success-box h3 { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+.success-box p { color: #666; font-size: 14px; margin-bottom: 1.5rem; }
+
+.warn-box {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  font-size: 14px;
+  color: #795548;
+  display: flex;
+  gap: 10px;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 2rem;
+}
+.feat {
+  background: white;
+  border-radius: 12px;
+  padding: 1.2rem;
+  border: 1px solid #e8eaf6;
+  text-align: center;
+}
+.feat-icon { font-size: 26px; margin-bottom: 8px; }
+.feat-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.feat-desc { font-size: 12px; color: #888; line-height: 1.5; }
+
+.plan-note {
+  background: #e3f2fd;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  font-size: 13px;
+  color: #1565c0;
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+footer { text-align: center; padding: 2rem; font-size: 12px; color: #aaa; }
+
+@media (max-width: 600px) {
+  .features { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 24px; }
+  .counter-card { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Hinmei<span>.</span>app</div>
+  <div class="badge">β版 無料トライアル中</div>
+</header>
+
+<div class="hero">
+  <h1>送り状の品名を<span>大きく太く</span>、<br>梱包ミスをゼロに。</h1>
+  <p>ネコポス送り状PDFをアップロードするだけ。品名が自動で大きく・太くなった印刷用PDFをすぐにダウンロードできます。</p>
+  <div class="pill-row">
+    <div class="pill"><div class="dot dot-green"></div>月100件まで無料</div>
+    <div class="pill"><div class="dot dot-blue"></div>100件超は月額プランで無制限</div>
+  </div>
+</div>
+
+<main>
+  <div class="counter-card">
+    <div class="counter-left">
+      <div class="counter-label">今月の処理件数（残り <span id="remaining">100</span> 件無料）</div>
+      <div class="counter-bar">
+        <div class="counter-fill" id="counter-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <div>
+      <div class="counter-num">
+        <span id="used-num">0</span><span class="counter-sub">/100</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-upload">
+    <div class="upload-zone" id="drop-zone">
+      <input type="file" id="file-input" accept=".pdf">
+      <div class="upload-icon">📄</div>
+      <h2>送り状PDFをアップロード</h2>
+      <p>クリックまたはドラッグ＆ドロップ<br>ネコポス送り状PDF対応</p>
+    </div>
+  </div>
+
+  <div id="sec-file" style="display:none">
+    <div class="file-card">
+      <div style="font-size:32px">📋</div>
+      <div class="file-info">
+        <div class="file-name" id="file-name"></div>
+        <div class="file-meta" id="file-meta"></div>
+      </div>
+      <button class="btn-x" onclick="reset()">✕ 取消</button>
+    </div>
+    <div class="warn-box" id="warn-limit" style="display:none">
+      <span>⚠️</span>
+      <div><strong>無料枠の上限に近づいています。</strong><br>月額プランへのアップグレードをご検討ください。</div>
+    </div>
+    <button class="btn-main btn-process" id="btn-process" onclick="startProcess()">
+      ✨ 品名を大きく・太くする
+    </button>
+  </div>
+
+  <div id="sec-processing" style="display:none">
+    <div class="processing-box">
+      <div class="spinner"></div>
+      <h3>品名を拡大中...</h3>
+      <p id="proc-msg">サーバーにアップロード中...</p>
+      <div class="proc-bar">
+        <div class="proc-fill" id="proc-fill" style="width:5%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sec-success" style="display:none">
+    <div class="success-box">
+      <div class="success-icon">✅</div>
+      <h3>処理完了！</h3>
+      <p id="success-msg">品名を大きく・太くしたPDFが完成しました。</p>
+      <button class="btn-main btn-download" onclick="download()">⬇️ ダウンロード</button>
+      <button class="btn-main btn-reset" onclick="reset()">別のPDFを処理する</button>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feat">
+      <div class="feat-icon">🔍</div>
+      <div class="feat-title">品名を自動検出</div>
+      <div class="feat-desc">【】で囲まれた品名を全ページ自動検出・拡大</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">↔️</div>
+      <div class="feat-title">QRコードに被らない</div>
+      <div class="feat-desc">長い品名は自動でサイズ調整</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🔒</div>
+      <div class="feat-title">データは保存しない</div>
+      <div class="feat-desc">PDFは処理完了後すぐに削除</div>
+    </div>
+  </div>
+
+  <div class="plan-note">
+    💡 月100件まで完全無料。それ以上は月額プランで無制限に使えます（近日公開）
+  </div>
+</main>
+
+<footer>© 2026 Hinmei.app</footer>
+
+<script>
+const FREE_LIMIT = 100;
+let used = parseInt(localStorage.getItem('hinmei_used') || '0');
+let selectedFile = null;
+let resultBlob = null;
+
+function updateCounter() {
+  const u = Math.min(used, FREE_LIMIT);
+  document.getElementById('used-num').textContent = u;
+  document.getElementById('remaining').textContent = Math.max(FREE_LIMIT - u, 0);
+  const fill = document.getElementById('counter-fill');
+  fill.style.width = (u / FREE_LIMIT * 100) + '%';
+  fill.style.background = u >= 80 ? '#e65100' : u >= 50 ? '#f57c00' : '#3f51b5';
+}
+updateCounter();
+
+const dz = document.getElementById('drop-zone');
+const fi = document.getElementById('file-input');
+fi.onchange = e => { if (e.target.files[0]) pick(e.target.files[0]); };
+dz.ondragover = e => { e.preventDefault(); dz.classList.add('drag'); };
+dz.ondragleave = () => dz.classList.remove('drag');
+dz.ondrop = e => { e.preventDefault(); dz.classList.remove('drag'); if (e.dataTransfer.files[0]) pick(e.dataTransfer.files[0]); };
+
+function pick(file) {
+  if (!file.name.toLowerCase().endsWith('.pdf')) { alert('PDFファイルを選択してください'); return; }
+  selectedFile = file;
+  document.getElementById('file-name').textContent = file.name;
+  document.getElementById('file-meta').textContent = (file.size / 1024 / 1024).toFixed(1) + ' MB';
+  if (used >= FREE_LIMIT * 0.8) document.getElementById('warn-limit').style.display = 'flex';
+  show('sec-file');
+}
+
+async function startProcess() {
+  if (!selectedFile) return;
+  show('sec-processing');
+
+  const msg = document.getElementById('proc-msg');
+  const fill = document.getElementById('proc-fill');
+
+  try {
+    msg.textContent = 'PDFをサーバーに送信中...';
+    fill.style.width = '15%';
+
+    const ab = await selectedFile.arrayBuffer();
+    const b64 = btoa(String.fromCharCode(...new Uint8Array(ab)));
+
+    fill.style.width = '30%';
+    msg.textContent = '品名を解析・拡大中... (34ページで約1〜2分)';
+
+    const res = await fetch('/api/process', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pdf: b64 })
+    });
+
+    fill.style.width = '90%';
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'サーバーエラー');
+    }
+
+    const data = await res.json();
+    const pdfBytes = Uint8Array.from(atob(data.pdf), c => c.charCodeAt(0));
+    resultBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+
+    used = Math.min(used + 6, FREE_LIMIT + 50);
+    localStorage.setItem('hinmei_used', used);
+    updateCounter();
+
+    fill.style.width = '100%';
+    const base = selectedFile.name.replace(/\.pdf$/i, '');
+    document.getElementById('success-msg').textContent =
+      `「${base}_品名拡大.pdf」の準備ができました。`;
+
+    await new Promise(r => setTimeout(r, 400));
+    show('sec-success');
+
+  } catch (e) {
+    show('sec-file');
+    alert('エラーが発生しました：' + e.message + '\n\nしばらく経ってから再度お試しください。');
+  }
+}
+
+function download() {
+  if (!resultBlob) return;
+  const base = selectedFile.name.replace(/\.pdf$/i, '');
+  const url = URL.createObjectURL(resultBlob);
+  const a = document.createElement('a');
+  a.href = url; a.download = base + '_品名拡大.pdf'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function reset() {
+  selectedFile = null; resultBlob = null;
+  fi.value = '';
+  document.getElementById('warn-limit').style.display = 'none';
+  show('sec-upload');
+}
+
+function show(id) {
+  ['sec-upload','sec-file','sec-processing','sec-success'].forEach(s => {
+    document.getElementById(s).style.display = s === id ? 'block' : 'none';
+  });
+}
+</script>
+</body>
+</html>
