@@ -85,13 +85,18 @@ def process_pdf(pdf_bytes: bytes) -> bytes:
             pl_page = plumber_pdf.pages[i]
             img = render_page_to_image(fitz_doc, i, DPI)
 
-            words = pl_page.extract_words()
+words = pl_page.extract_words()
+
+            # ▼▼▼ デバッグ用（原因特定できたら削除） ▼▼▼
+            if i == 0:
+                raise Exception("DEBUG WORDS: " + json.dumps([w["text"] for w in words], ensure_ascii=False))
+            # ▲▲▲ デバッグ用 ▲▲▲
+
             items = [
                 (w["text"], w["x0"], w["x1"], w["top"], w["bottom"])
                 for w in words
                 if "\u3010" in w["text"]
             ]
-
             if items:
                 draw = ImageDraw.Draw(img)
                 for text, x0, x1, top, bottom in items:
