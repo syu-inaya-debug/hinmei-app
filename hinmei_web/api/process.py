@@ -85,10 +85,6 @@ def process_pdf(pdf_bytes: bytes) -> bytes:
             pl_page = plumber_pdf.pages[i]
             img = render_page_to_image(fitz_doc, i, DPI)
 
-for i in range(total):
-            pl_page = plumber_pdf.pages[i]
-            img = render_page_to_image(fitz_doc, i, DPI)
-
             words = pl_page.extract_words()
 
             # ▼▼▼ デバッグ用（原因特定できたら削除） ▼▼▼
